@@ -1,0 +1,11 @@
+{% extends "Pytania/base.html" %}
+{% block content %}
+
+{% if score == -1 %}
+    <h4>Nie rozegrałeś jeszcze żadnego quizu!!</h4>
+    <a class="btn btn-primary" href="start" role="button">Rozpocznij pierwszy quiz</a>
+{% else %}
+    <h4>Twój najlepszy wynik to : {{score}} poprawnych odpowiedzi</h4>
+    <a class="btn btn-primary" href="start" role="button">Rozpocznij nowy quiz</a>
+{% endif%}
+{% endblock %}

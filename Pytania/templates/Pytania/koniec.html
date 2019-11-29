@@ -1,0 +1,22 @@
+{% extends 'Pytania/base.html' %}
+
+{% block content %}
+    Poprawne odpowiedzi : {{poprawne_odp}}
+<!--
+    {% for i in '012' %}
+        {{i}}
+        <button type="button" class="{{klasy.i.odpA}}" disabled>{{pytanie.i.odpA}}</button>
+        <button type="button" class="{{klasa.odpB}}" disabled>{{pytanie.i.odpB}}</button>
+        <button type="button" class="{{klasa.odpC}}" disabled>{{pytanie.i.odpC}}</button>
+        <button type="button" class="{{klasa.odpD}}" disabled>{{pytanie.i.odpD}}</button>
+
+    {% endfor %}
+    -->
+    {% if poprawne_odp == 5 %}
+        <h3>Gratuluję odpowiedziałeś poprawnie na wszysktie pytania ! </h3>
+    {% else %}
+        <h3>Pytania na które błędnie odpowiedziałeś :</h3>
+        {{my_html |safe}}
+    {% endif %}
+    <a class="btn btn-primary" href="../Quiz" role="button">Wróć do panelu głównego</a>
+{% endblock %}
