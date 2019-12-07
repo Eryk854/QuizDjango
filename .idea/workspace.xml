@@ -1,7 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="5ad9c3ce-5bfc-4c46-8067-4eff6aa258ed" name="Default Changelist" comment="" />
+    <list default="true" id="5ad9c3ce-5bfc-4c46-8067-4eff6aa258ed" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pytania/static/images/Facebook_icon.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pytania/static/images/facebook_icon.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pytania/static/images/g _icon.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pytania/static/images/git_icon.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pytania/templates/Pytania/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/Pytania/templates/Pytania/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pytania/templates/Pytania/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/Pytania/templates/Pytania/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pytania/templates/Pytania/koniec.html" beforeDir="false" afterPath="$PROJECT_DIR$/Pytania/templates/Pytania/koniec.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pytania/templates/Pytania/pytanie.html" beforeDir="false" afterPath="$PROJECT_DIR$/Pytania/templates/Pytania/pytanie.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pytania/templates/Users/login_page.html" beforeDir="false" afterPath="$PROJECT_DIR$/Pytania/templates/Users/login_page.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pytania/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/Pytania/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pytania/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Pytania/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/user/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/user/views.py" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -16,13 +32,18 @@
       </list>
     </option>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="ProjectId" id="1U537PTyXeknmwaFDD9edTbYvRD" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Eryk\Desktop\Django\Quiz\Pytania\static\Pytania" />
       <recent name="C:\Users\Eryk\Desktop\Django\Quiz\Pytania\static\images" />
     </key>
   </component>
@@ -50,5 +71,21 @@
       <updated>1574632460320</updated>
     </task>
     <servers />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName="*.css" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>

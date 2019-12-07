@@ -2,10 +2,14 @@
 {% block content %}
 
 {% if score == -1 %}
-    <h4>Nie rozegrałeś jeszcze żadnego quizu!!</h4>
-    <a class="btn btn-primary" href="start" role="button">Rozpocznij pierwszy quiz</a>
+<div class="text-center mt-4">
+    <h4 >Nie rozegrałeś jeszcze żadnego quizu!!</h4>
+    <a class="btn btn-primary mt-3" href="start" role="button">Rozpocznij pierwszy quiz</a>
+</div>
 {% else %}
-    <h4>Twój najlepszy wynik to : {{score}} poprawnych odpowiedzi</h4>
-    <a class="btn btn-primary" href="start" role="button">Rozpocznij nowy quiz</a>
+    <div class="text-center mt-3">
+        <h4 >Twój najlepszy wynik to : {{score}} poprawnych odpowiedzi</h4>
+        <a class="btn btn-primary mt-3"  href="start" role="button">Rozpocznij nowy quiz</a>
+    </div>
 {% endif%}
 {% endblock %}

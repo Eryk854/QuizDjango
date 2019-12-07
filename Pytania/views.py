@@ -1,5 +1,6 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from  .models import Pytanie
 from user.models import Player
@@ -12,6 +13,29 @@ lista_pytan = []
 bledne_odpowiedzi = []
 moje_bledne =[]
 user_email = ''
+flaga = False
+
+
+def get_acccess(func):
+    def wrapper(*args):
+        global flaga
+        if flaga:
+            return func(*args)
+        else:
+            # return HttpResponseRedirect(reverse('login_page'))
+            return redirect("login_page")
+    return wrapper
+
+
+@get_acccess
+def index(request):
+    global user_email
+    user = Player.objects.get(email=user_email)
+    wynik = user.best_score
+    return render(request, "Pytania/index.html",
+                    {'player':user_email,
+                    'score':wynik})
+
 def get_random_element():
     global lista_pytan
     count = Pytanie.objects.count()
@@ -20,7 +44,7 @@ def get_random_element():
         random_object = Pytanie.objects.all()[randint(0,count-1)]
     return random_object
 
-
+@get_acccess
 def pierwsze_pytanie(request):
     global nr_pytania, poprawne_odpowiedzi,lista_pytan,bledne_odpowiedzi,moje_bledne
     global user_email
@@ -35,27 +59,26 @@ def pierwsze_pytanie(request):
                    'nr_pytania':nr_pytania+1,
                   'player':user_email})
 
-def inicialize_user(request,email):
-    global user_email
+
+def inicialize_user(request, email):
+    global user_email, flaga
+    flaga = True
     user_email = email
     return redirect("../")
 
-def index(request):
-    global user_email
-    user = Player.objects.get(email=user_email)
-    wynik = user.best_score
-    return render(request, "Pytania/index.html",
-                  {'player':user_email,
-                   'score':wynik})
+
+
+
+
 
 @csrf_exempt
-def sprawdz_odp(request,pytanie_id):
+def sprawdz_odp(request, pytanie_id):
     global poprawne_odpowiedzi,nr_pytania,lista_pytan
     odp = request.POST['options']
     true_odp = Pytanie.objects.get(id=pytanie_id)
     true_odp = true_odp.poprawnaOdp
     if odp == true_odp:
-        poprawne_odpowiedzi+=1
+        poprawne_odpowiedzi += 1
     else:
         global bledne_odpowiedzi,moje_bledne
         bledne_odpowiedzi.append(pytanie_id)
@@ -69,7 +92,7 @@ def sprawdz_odp(request,pytanie_id):
     else:
         return HttpResponseRedirect('../../Quiz/kolejne_pytanie')
 
-
+@get_acccess
 def kolejne_pytanie(request):
     global nr_pytania
     global user_email
@@ -80,6 +103,7 @@ def kolejne_pytanie(request):
                    'player':user_email})
 
 
+@get_acccess
 def zakoncz_quiz(request):
     global bledne_odpowiedzi,moje_bledne,poprawne_odpowiedzi
     global user_email
@@ -96,15 +120,7 @@ def zakoncz_quiz(request):
     for nr_pytania in bledne_odpowiedzi:
         slownik = dict()
         pytanie = Pytanie.objects.get(id=nr_pytania)
-        """slownik['odpA'] = "btn btn-succes btn-sm" if pytanie.poprawnaOdp == 'A' else "btn btn-info btn-lg btn-block"
-        slownik['odpB'] = "btn btn-succes btn-sm" if pytanie.poprawnaOdp == 'B' else "btn btn-info btn-lg btn-block"
-        slownik['odpC'] = "btn btn-succes btn-sm" if pytanie.poprawnaOdp == 'C' else "btn btn-info btn-lg btn-block"
-        slownik['odpD'] = "btn btn-succes btn-sm" if pytanie.poprawnaOdp == 'D' else "btn btn-info btn-lg btn-block"
 
-        slownik['odpA'] = "btn btn-danger btn-sm" if moje_bledne[i] == 'A' else "btn btn-info btn-lg btn-block"
-        slownik['odpB'] = "btn btn-danger btn-sm" if moje_bledne[i] == 'B' else "btn btn-info btn-lg btn-block"
-        slownik['odpC'] = "btn btn-danger btn-sm" if moje_bledne[i] == 'C' else "btn btn-info btn-lg btn-block"
-        slownik['odpD'] = "btn btn-danger btn-sm" if moje_bledne[i] == 'D' else "btn btn-info btn-lg btn-block"""
 
         litery = ["A","B","C","D"]
         litery.remove(pytanie.poprawnaOdp)
@@ -128,7 +144,12 @@ def zakoncz_quiz(request):
     return render(request,"Pytania/koniec.html",
                   {"klasy":klasy,
                    "pytanie":pytania,
-                   'range':range(len(klasy)),
                    "my_html":my_html,
                    'poprawne_odp': poprawne_odpowiedzi,
                    'player':user_email})
+
+@get_acccess
+def logout(request):
+    global flaga
+    flaga = False
+    return render(request,"Pytania/logout_page.html")

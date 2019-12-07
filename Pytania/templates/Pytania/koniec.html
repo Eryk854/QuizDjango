@@ -1,7 +1,7 @@
 {% extends 'Pytania/base.html' %}
 
 {% block content %}
-    Poprawne odpowiedzi : {{poprawne_odp}}
+
 <!--
     {% for i in '012' %}
         {{i}}
@@ -12,11 +12,14 @@
 
     {% endfor %}
     -->
+<div class="text-center">
+    <h3 class="mt-3">Odpowiedziałeś poprawnie na {{poprawne_odp}} pytania</h3>
     {% if poprawne_odp == 5 %}
         <h3>Gratuluję odpowiedziałeś poprawnie na wszysktie pytania ! </h3>
     {% else %}
-        <h3>Pytania na które błędnie odpowiedziałeś :</h3>
+        <h4 class="mt-4">Błędne odpowiedzi :</h4>
         {{my_html |safe}}
     {% endif %}
-    <a class="btn btn-primary" href="../Quiz" role="button">Wróć do panelu głównego</a>
+    <a class="btn btn-primary mt-3" href="../Quiz" role="button">Wróć do panelu głównego</a>
+</div>
 {% endblock %}
