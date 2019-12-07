@@ -1,0 +1,27 @@
+body{
+background-image: url("white-waves.png");
+}
+
+ion-icon{
+  font-size: 46px;
+}
+
+ion-icon[name=logo-facebook] {
+  color:#0066ff;
+}
+ion-icon[name=logo-facebook]:hover{
+    color:#002966;
+}
+
+ion-icon[name=logo-github] {
+  color:#595959;
+}
+ion-icon[name=logo-github]:hover{
+    color:#161616;
+}
+ion-icon[name=logo-googleplus] {
+  color:#BD7045;
+}
+ion-icon[name=logo-googleplus]:hover{
+    color:#E46B00;
+}
