@@ -1,0 +1,21 @@
+{% extends 'Pytania/base.html' %}
+{% block content %}
+    {% if messages %}
+        {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} mt-3">
+        {{ message }}
+    </div>
+        {% endfor %}
+    {% endif %}
+    <h2>Login</h2>
+    <form method="post" >
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Login</button>
+    </form>
+    <div class="border-top">
+        <small class="text-muted">
+            Nie masz konta? <a class="ml-2" href="{% url 'register_user' %}">Zarejestruj się</a>
+        </small>
+    </div>
+{% endblock %}

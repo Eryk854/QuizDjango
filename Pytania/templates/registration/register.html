@@ -1,0 +1,16 @@
+{% extends 'Pytania/base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div>
+        <form method="post">
+          {% csrf_token %}
+          {{ form|crispy }}
+          <button type="submit">Register</button>
+        </form>
+    </div>
+    <div class="border-top">
+        <small class="text-muted">
+            Masz już konto ? <a class="ml-2" href="{% url 'our_login' %}">Zaloguj się </a>
+        </small>
+    </div>
+{% endblock %}
