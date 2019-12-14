@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Pytania.apps.PytaniaConfig',
+    'crispy_forms',
     'user.apps.UserConfig'
 ]
 
@@ -52,7 +53,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'Quiz.urls'
-
+LOGIN_REDIRECT_URL = 'main-game-page'
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -69,8 +71,14 @@ TEMPLATES = [
     },
 ]
 
+AUTH_USER_MODEL = 'user.Account'
+
 WSGI_APPLICATION = 'Quiz.wsgi.application'
 
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'user.backends.SocialBackend',
+)
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases

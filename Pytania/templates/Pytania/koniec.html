@@ -2,23 +2,21 @@
 
 {% block content %}
 
-<!--
-    {% for i in '012' %}
-        {{i}}
-        <button type="button" class="{{klasy.i.odpA}}" disabled>{{pytanie.i.odpA}}</button>
-        <button type="button" class="{{klasa.odpB}}" disabled>{{pytanie.i.odpB}}</button>
-        <button type="button" class="{{klasa.odpC}}" disabled>{{pytanie.i.odpC}}</button>
-        <button type="button" class="{{klasa.odpD}}" disabled>{{pytanie.i.odpD}}</button>
-
-    {% endfor %}
-    -->
 <div class="text-center">
     <h3 class="mt-3">Odpowiedziałeś poprawnie na {{poprawne_odp}} pytania</h3>
     {% if poprawne_odp == 5 %}
         <h3>Gratuluję odpowiedziałeś poprawnie na wszysktie pytania ! </h3>
     {% else %}
         <h4 class="mt-4">Błędne odpowiedzi :</h4>
-        {{my_html |safe}}
+
+       {% for klasa, pytanie in my_elements  %}
+        <h5 class="mt-2">{{pytanie.tresc}}</h5>
+        <button type="button" class="{{klasa.odpA}}" disabled>{{pytanie.odpA}}</button>
+        <button type="button" class="{{klasa.odpB}}" disabled>{{pytanie.odpB}}</button>
+        <button type="button" class="{{klasa.odpC}}" disabled>{{pytanie.odpC}}</button>
+        <button type="button" class="{{klasa.odpD}}" disabled>{{pytanie.odpD}}</button>
+
+    {% endfor %}
     {% endif %}
     <a class="btn btn-primary mt-3" href="../Quiz" role="button">Wróć do panelu głównego</a>
 </div>

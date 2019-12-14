@@ -1,14 +1,13 @@
 {% extends 'Pytania/base.html' %}
 {% block content %}
-
   <span class="navbar-brand mb-0 h1">Pytanie : {{nr_pytania}}/5</span>
 
-<form action = "sprawdz_odp/{{pytanie.id}}" method="post" >
+<form action = "../sprawdz_odp/{{pytanie.id}}" method="post" >
     <div class="text-center mt-4">
         <h3 > {{pytanie.tresc}}</h3>
         <div class="btn-group-toggle mt-4" data-toggle="buttons">
           <label class="btn btn-info btn-lg btn-block" style="display:block;">
-            <input autocomplete="off" checked name="options" type="radio" value="A"> {{pytanie.odpA}}
+            <input autocomplete="off" name="options" type="radio" value="A"> {{pytanie.odpA}}
           </label>
           <label class="btn btn-info btn-lg btn-block">
             <input autocomplete="off" name="options" type="radio"  value="B"> {{pytanie.odpB}}
@@ -19,6 +18,9 @@
             <label class="btn btn-info btn-lg btn-block">
             <input autocomplete="off" name="options"  type="radio" value="D"> {{pytanie.odpD}}
           </label>
+            </label>
+            <input autocomplete="off" name="options"  type="radio" value="E" hidden checked>
+
         </div>
         <button class="btn btn-warning btn-lg btn-block mt-3" type="submit">Potwierdź odpowiedź</button>
     </div>

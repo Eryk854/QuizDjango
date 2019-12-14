@@ -3,153 +3,117 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from  .models import Pytanie
-from user.models import Player
+from django.contrib.auth.decorators import login_required
+from user.models import Player,Account
 from random import randint
+from django.core import serializers
 # Create your views here.
 
-nr_pytania = 0
-poprawne_odpowiedzi = 0
-lista_pytan = []
-bledne_odpowiedzi = []
-moje_bledne =[]
-user_email = ''
-flaga = False
+# def get_acccess(func):
+#     def wrapper(*args):
+#         global flaga
+#         if flaga:
+#             return func(*args)
+#         else:
+#             # return HttpResponseRedirect(reverse('login_page'))
+#             return redirect("login_page")
+#     return wrapper
 
 
-def get_acccess(func):
-    def wrapper(*args):
-        global flaga
-        if flaga:
-            return func(*args)
-        else:
-            # return HttpResponseRedirect(reverse('login_page'))
-            return redirect("login_page")
-    return wrapper
-
-
-@get_acccess
+@login_required
 def index(request):
-    global user_email
-    user = Player.objects.get(email=user_email)
-    wynik = user.best_score
+    wynik = Player.objects.get(email=request.user.email).best_score
     return render(request, "Pytania/index.html",
-                    {'player':user_email,
+                    {'player':request.user.email,
                     'score':wynik})
 
-def get_random_element():
-    global lista_pytan
+
+def get_questions():
     count = Pytanie.objects.count()
-    random_object = Pytanie.objects.all()[randint(0, count - 1)]
-    while random_object.id in lista_pytan:
-        random_object = Pytanie.objects.all()[randint(0,count-1)]
-    return random_object
+    questions = []
+    while len(questions)<5:
+        random_object = Pytanie.objects.all()[randint(0, count - 1)]
+        while random_object in questions:
+            random_object = Pytanie.objects.all()[randint(0, count - 1)]
+        questions.append(random_object)
+    questions = serializers.serialize('json',questions)
+    return questions
 
-@get_acccess
+@login_required
 def pierwsze_pytanie(request):
-    global nr_pytania, poprawne_odpowiedzi,lista_pytan,bledne_odpowiedzi,moje_bledne
-    global user_email
-    nr_pytania = 0
-    poprawne_odpowiedzi = 0
-    lista_pytan = []
-    bledne_odpowiedzi = []
-    moje_bledne = []
-    pytanie = get_random_element()
-    return render(request,"Pytania/pytanie.html",
-                  {'pytanie':pytanie,
-                   'nr_pytania':nr_pytania+1,
-                  'player':user_email})
+    request.session['bledne_odpowiedzi'] = []
+    request.session['moje_bledne'] = []
+    request.session['nr_pytania'] = 0
+    request.session['poprawne_odpowiedzi'] = 0
+    request.session['pytania'] = get_questions()
+    request.session.modified = True
+    return redirect('/Quiz/questions/')
 
-
-def inicialize_user(request, email):
-    global user_email, flaga
-    flaga = True
-    user_email = email
-    return redirect("../")
-
-
-
-
-
+@login_required
+def questions(request):
+    if request.session['pytania']:
+        # pytania istnieją czas na nie odpowiedzieć
+        i = 0
+        for obj in serializers.deserialize('json', request.session['pytania']):
+            if request.session['nr_pytania']==i:
+                return render(request, "Pytania/pytanie.html",
+                              {'pytanie':obj.object,
+                                'nr_pytania':request.session['nr_pytania']+1,
+                                'player':request.user.email})
+            i+=1
 
 @csrf_exempt
 def sprawdz_odp(request, pytanie_id):
-    global poprawne_odpowiedzi,nr_pytania,lista_pytan
     odp = request.POST['options']
     true_odp = Pytanie.objects.get(id=pytanie_id)
     true_odp = true_odp.poprawnaOdp
     if odp == true_odp:
-        poprawne_odpowiedzi += 1
+        request.session['poprawne_odpowiedzi'] += 1
     else:
-        global bledne_odpowiedzi,moje_bledne
-        bledne_odpowiedzi.append(pytanie_id)
-        moje_bledne.append(odp)
+        request.session['bledne_odpowiedzi'].append(pytanie_id)
+        request.session['moje_bledne'].append(odp)
 
-    nr_pytania+=1
-    lista_pytan.append(pytanie_id)
+    request.session['nr_pytania']+=1
 
-    if nr_pytania == 5:
-        return HttpResponseRedirect('../../Quiz/zakoncz_quiz')
+    if request.session['nr_pytania'] == 5:
+        return redirect('end_quiz')
     else:
-        return HttpResponseRedirect('../../Quiz/kolejne_pytanie')
-
-@get_acccess
-def kolejne_pytanie(request):
-    global nr_pytania
-    global user_email
-    pytanie = get_random_element()
-    return render(request, "Pytania/pytanie.html",
-                  {'pytanie': pytanie,
-                   'nr_pytania':nr_pytania+1,
-                   'player':user_email})
+        return HttpResponseRedirect('/Quiz/questions/')
 
 
-@get_acccess
+@login_required
 def zakoncz_quiz(request):
-    global bledne_odpowiedzi,moje_bledne,poprawne_odpowiedzi
-    global user_email
+    bledne_odpowiedzi = request.session['bledne_odpowiedzi']
+    moje_bledne = request.session['moje_bledne']
     i = 0
     klasy = []
     pytania = []
 
-    user = Player.objects.get(email=user_email)
+    user = Player.objects.get(email=request.user.email)
     wynik = user.best_score
-    if poprawne_odpowiedzi > wynik:
-        user.best_score = poprawne_odpowiedzi
+    if request.session['poprawne_odpowiedzi'] > wynik:
+        user.best_score = request.session['poprawne_odpowiedzi']
         user.save()
 
     for nr_pytania in bledne_odpowiedzi:
         slownik = dict()
         pytanie = Pytanie.objects.get(id=nr_pytania)
 
-
         litery = ["A","B","C","D"]
         litery.remove(pytanie.poprawnaOdp)
-        litery.remove((moje_bledne[i]))
+
         slownik['odp'+pytanie.poprawnaOdp] = "btn btn-success btn-lg btn-block"
-        slownik['odp'+moje_bledne[i]] = "btn btn-danger btn-lg btn-block"
+        if moje_bledne[i]!='E':
+            slownik['odp'+moje_bledne[i]] = "btn btn-danger btn-lg btn-block"
+            litery.remove((moje_bledne[i]))
         for litera in litery:
             slownik['odp'+litera] = 'btn btn-info btn-lg btn-block'
         i+=1
         klasy.append(slownik)
         pytania.append(pytanie)
 
-    my_html = ''
-    for i in range(len(klasy)):
-        my_html += "<h5>"+pytania[i].tresc+"</h5>"
-        my_html +="<button type='button' class='"+klasy[i]['odpA']+"' disabled>"+pytania[i].odpA+"</button> \n"
-        my_html += "<button type='button' class='" + klasy[i]['odpB'] + "' disabled>" + pytania[i].odpB + "</button> \n"
-        my_html += "<button type='button' class='" + klasy[i]['odpC'] + "' disabled>" + pytania[i].odpC + "</button> \n"
-        my_html += "<button type='button' class='" + klasy[i]['odpD'] + "' disabled>" + pytania[i].odpD + "</button> \n"
-
+    my_elements = zip(klasy, pytania)
     return render(request,"Pytania/koniec.html",
-                  {"klasy":klasy,
-                   "pytanie":pytania,
-                   "my_html":my_html,
-                   'poprawne_odp': poprawne_odpowiedzi,
-                   'player':user_email})
-
-@get_acccess
-def logout(request):
-    global flaga
-    flaga = False
-    return render(request,"Pytania/logout_page.html")
+                  {'my_elements':my_elements,
+                   'poprawne_odp': request.session['poprawne_odpowiedzi'],
+                   'player':request.user.email})
