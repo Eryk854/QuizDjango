@@ -1,0 +1,32 @@
+{% extends "Pytania/base.html" %}
+{% block content %}
+{% if messages %}
+    {% for message in messages%}
+    <div class="alert alert-{{ message.tags }} mt-3">
+            {{ message }}
+    </div>
+    {% endfor %}
+{% endif %}
+<div class="text-center mt-4">
+    <h4>Witaj w panelu użytkownika</h4>
+</div>
+<div class="row mt-4" >
+    <div class="col-4"  >
+        <img  class="img-fluid rounded-circle" src="{{player.profile_image.url}}" alt="">
+    </div>
+    <div class="col-8">
+        <h3 class="account-heading">{{player.email}}</h3>
+         {% if player.username %}
+            <p class="text">Nazwa profilu : {{player.username}}</p>
+        {% endif %}
+        <p class="text">Dołączyłeś dnia : {{date_joined|date:"j M Y"}}</p>
+        {% ifnotequal player.best_score -1 %}
+            <p class="text-secondary">Twój najlepszy wynik : {{player.best_score}}</p>
+        {% endifnotequal %}
+        <a href="user_panel/edit_profile/"> <button>Zaktualizuj dane</button></a>
+    </div>
+</div>
+<a class="btn btn-info btn-lg btn-block mt-3" href="/Quiz/" role="button">Wróć do Quizu</a>
+
+
+{% endblock %}

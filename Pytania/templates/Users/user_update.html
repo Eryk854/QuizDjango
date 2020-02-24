@@ -1,0 +1,19 @@
+{% extends "Pytania/base.html" %}
+{% block content %}
+{% load crispy_forms_tags %}
+
+<div class="row mt-4" >
+    <div class="col-4" >
+        <img class="img-fluid rounded-circle" src="{{player.profile_image.url}}" alt="">
+    </div>
+    <div class="col-8">
+        <h3 class="account-heading">{{player.email}}</h3>
+        <form action="/user_panel/edit_profile/" method="post" enctype="multipart/form-data">
+            {% csrf_token%}
+            <!--{{update_form.as_p}}-->
+            {{form.as_p}}
+            <input type="submit" value="Zaktualizuj profil">
+        </form>
+    </div>
+</div>
+{% endblock %}
