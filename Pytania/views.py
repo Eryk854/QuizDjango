@@ -9,23 +9,13 @@ from random import randint
 from django.core import serializers
 # Create your views here.
 
-# def get_acccess(func):
-#     def wrapper(*args):
-#         global flaga
-#         if flaga:
-#             return func(*args)
-#         else:
-#             # return HttpResponseRedirect(reverse('login_page'))
-#             return redirect("login_page")
-#     return wrapper
-
 
 @login_required
 def index(request):
     wynik = Player.objects.get(email=request.user.email).best_score
     return render(request, "Pytania/index.html",
-                    {'player':request.user.email,
-                    'score':wynik})
+                    {'player': request.user.email,
+                     'score': wynik})
 
 
 def get_questions():

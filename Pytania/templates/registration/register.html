@@ -1,6 +1,15 @@
 {% extends 'Pytania/base.html' %}
 {% load crispy_forms_tags %}
 {% block content %}
+
+<!--{% if form.errors%}
+    {% for error in form_errors %}
+        xxx
+         <div class="alert alert-danger mt-3">
+                {{ error }}
+            </div>
+    {% endfor %}
+{% endif %}-->
     <div>
         <form method="post">
           {% csrf_token %}

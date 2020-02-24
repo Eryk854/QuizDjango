@@ -1,10 +1,29 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser,BaseUserManager
 from django.db.models.signals import post_save
+from django.urls import reverse
+
+from PIL import Image
 # Create your models here.
 class Player(models.Model):
     email = models.EmailField(max_length=254,blank=False)
+    username = models.CharField(max_length=100, blank=True)
     best_score = models.IntegerField(default=-1)
+    profile_image = models.ImageField(upload_to='profile/', default='profile/default.jpg')
+
+    def save(self, *args, **kwargs):
+        super().save()
+
+        img = Image.open(self.profile_image.path)
+        if img.height > 300 or img.width > 600:
+            output_size = (300, 600)
+            img.thumbnail(output_size)
+            img.save(self.profile_image.path)
+
+    @staticmethod
+    def get_absolute_url():
+        return reverse('user_panel')
+
 
 
 class MyAccountManager(BaseUserManager):
@@ -35,7 +54,6 @@ class MyAccountManager(BaseUserManager):
 
 class Account(AbstractBaseUser):
     email = models.EmailField(verbose_name="Email", unique=True)
-    username = models.CharField(max_length=100, blank=True)
     date_joined = models.DateTimeField(verbose_name='date joinded',auto_now_add=True)
     last_login = models.DateTimeField(verbose_name='last login', auto_now=True)
     is_admin = models.BooleanField(default=False)
