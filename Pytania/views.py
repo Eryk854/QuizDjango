@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from user.models import Player,Account
 from random import randint
 from django.core import serializers
+import requests
 # Create your views here.
 
 
@@ -26,7 +27,18 @@ def get_questions():
         while random_object in questions:
             random_object = Pytanie.objects.all()[randint(0, count - 1)]
         questions.append(random_object)
-    questions = serializers.serialize('json',questions)
+    questions = serializers.serialize('json', questions)
+    return questions
+
+def get_questions_from_api():
+    api_questions = requests.get("http://localhost:8000/api/question/").json()
+    count = len(api_questions)
+    questions = []
+    while len(questions) < 5:
+        random_object = api_questions[randint(0, count - 1)]
+        while random_object in questions:
+            random_object = api_questions[randint(0, count - 1)]
+        questions.append(random_object)
     return questions
 
 @login_required
@@ -35,7 +47,7 @@ def pierwsze_pytanie(request):
     request.session['moje_bledne'] = []
     request.session['nr_pytania'] = 0
     request.session['poprawne_odpowiedzi'] = 0
-    request.session['pytania'] = get_questions()
+    request.session['pytania'] = get_questions_from_api()
     request.session.modified = True
     return redirect('/Quiz/questions/')
 
@@ -44,23 +56,26 @@ def questions(request):
     if request.session['pytania']:
         # pytania istnieją czas na nie odpowiedzieć
         i = 0
-        for obj in serializers.deserialize('json', request.session['pytania']):
-            if request.session['nr_pytania']==i:
+        for obj in request.session['pytania']:
+            if request.session['nr_pytania'] == i:
                 return render(request, "Pytania/pytanie.html",
-                              {'pytanie':obj.object,
-                                'nr_pytania':request.session['nr_pytania']+1,
-                                'player':request.user.email})
-            i+=1
+                              {'pytanie': obj,
+                               'nr_pytania': request.session['nr_pytania']+1,
+                               'player': request.user.email})
+            i += 1
 
 @csrf_exempt
-def sprawdz_odp(request, pytanie_id):
+def sprawdz_odp(request):
     odp = request.POST['options']
-    true_odp = Pytanie.objects.get(id=pytanie_id)
-    true_odp = true_odp.poprawnaOdp
+    print(request.session['nr_pytania'])
+    actual_question = request.session['pytania'][request.session['nr_pytania']]
+
+    print(actual_question)
+    true_odp = actual_question['correct_answer']
     if odp == true_odp:
         request.session['poprawne_odpowiedzi'] += 1
     else:
-        request.session['bledne_odpowiedzi'].append(pytanie_id)
+        request.session['bledne_odpowiedzi'].append(actual_question)
         request.session['moje_bledne'].append(odp)
 
     request.session['nr_pytania']+=1
@@ -85,20 +100,18 @@ def zakoncz_quiz(request):
         user.best_score = request.session['poprawne_odpowiedzi']
         user.save()
 
-    for nr_pytania in bledne_odpowiedzi:
+    for pytanie in bledne_odpowiedzi:
         slownik = dict()
-        pytanie = Pytanie.objects.get(id=nr_pytania)
-
-        litery = ["A","B","C","D"]
-        litery.remove(pytanie.poprawnaOdp)
-
-        slownik['odp'+pytanie.poprawnaOdp] = "btn btn-success btn-lg btn-block"
+        litery = ["A", "B", "C", "D"]
+        litery.remove(pytanie['correct_answer'])
+        print(moje_bledne)
+        slownik['answer'+pytanie['correct_answer']] = "btn btn-success btn-lg btn-block"
         if moje_bledne[i]!='E':
-            slownik['odp'+moje_bledne[i]] = "btn btn-danger btn-lg btn-block"
+            slownik['answer'+moje_bledne[i]] = "btn btn-danger btn-lg btn-block"
             litery.remove((moje_bledne[i]))
         for litera in litery:
-            slownik['odp'+litera] = 'btn btn-info btn-lg btn-block'
-        i+=1
+            slownik['answer'+litera] = 'btn btn-info btn-lg btn-block'
+        i += 1
         klasy.append(slownik)
         pytania.append(pytanie)
 

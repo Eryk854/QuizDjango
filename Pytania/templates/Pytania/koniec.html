@@ -10,11 +10,11 @@
         <h4 class="mt-4">Błędne odpowiedzi :</h4>
 
        {% for klasa, pytanie in my_elements  %}
-        <h5 class="mt-2">{{pytanie.tresc}}</h5>
-        <button type="button" class="{{klasa.odpA}}" disabled>{{pytanie.odpA}}</button>
-        <button type="button" class="{{klasa.odpB}}" disabled>{{pytanie.odpB}}</button>
-        <button type="button" class="{{klasa.odpC}}" disabled>{{pytanie.odpC}}</button>
-        <button type="button" class="{{klasa.odpD}}" disabled>{{pytanie.odpD}}</button>
+        <h5 class="mt-2">{{pytanie.text}}</h5>
+        <button type="button" class="{{klasa.answerA}}" disabled>{{pytanie.answerA}}</button>
+        <button type="button" class="{{klasa.answerB}}" disabled>{{pytanie.answerB}}</button>
+        <button type="button" class="{{klasa.answerC}}" disabled>{{pytanie.answerC}}</button>
+        <button type="button" class="{{klasa.answerD}}" disabled>{{pytanie.answerD}}</button>
 
     {% endfor %}
     {% endif %}

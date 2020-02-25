@@ -3,7 +3,7 @@ from . import views
 urlpatterns = [
     path('',views.index, name="main-game-page"),
     path('start',views.pierwsze_pytanie),
-    path('sprawdz_odp/<int:pytanie_id>',views.sprawdz_odp, name="sprawdz_odp"),
+    path('sprawdz_odp/',views.sprawdz_odp, name="sprawdz_odp"),
     path('zakoncz_quiz',views.zakoncz_quiz, name="end_quiz"),
     path('questions/', views.questions)
 ]

@@ -39,7 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'Pytania.apps.PytaniaConfig',
     'crispy_forms',
-    'user.apps.UserConfig'
+    'user.apps.UserConfig',
+    'rest_framework',
+    'questionApi'
 ]
 
 MIDDLEWARE = [
@@ -133,3 +135,10 @@ STATICFILES_DIR = {
 }
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        #'rest_framework.permissions.IsAdminUser',
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}
