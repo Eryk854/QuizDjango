@@ -40,6 +40,7 @@ class RegisterUserView(SuccessMessageMixin, View):
     success_message = "Konto zostało stworzone dla %(email)s!"
 
     def get(self, request):
+
         return render(request, self.template, {'form': self.form})
 
     def post(self,request):

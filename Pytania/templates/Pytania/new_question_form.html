@@ -1,0 +1,11 @@
+{% extends 'Pytania/base.html' %}
+
+{% block content %}
+
+<form action="{% url 'new_question' %}" method="post">
+    {% csrf_token %}
+    {{form.as_p}}
+    <input type="submit" value="Add question">
+</form>
+
+{% endblock %}

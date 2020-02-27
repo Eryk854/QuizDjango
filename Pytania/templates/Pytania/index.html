@@ -10,6 +10,7 @@
     <div class="text-center mt-3">
         <h4 >Twój najlepszy wynik to : {{score}} poprawnych odpowiedzi</h4>
         <a class="btn btn-primary mt-3"  href="start" role="button">Rozpocznij nowy quiz</a>
+        <a class="btn btn-primary mt-3"  href="{% url 'new_question' %}" role="button">Add question to database</a>
     </div>
 {% endif%}
 {% endblock %}

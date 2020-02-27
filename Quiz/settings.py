@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'user.apps.UserConfig',
     'rest_framework',
+    'rest_framework.authtoken',
     'questionApi'
 ]
 
@@ -50,6 +51,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.RemoteUserMiddleware',  # remote user!!!!!!!!!
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -137,8 +139,13 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+        'questionApi.authentication.MyAuthentication'
+    ),
     'DEFAULT_PERMISSION_CLASSES': [
         #'rest_framework.permissions.IsAdminUser',
         'rest_framework.permissions.IsAuthenticated',
-    ]
+    ],
+
 }

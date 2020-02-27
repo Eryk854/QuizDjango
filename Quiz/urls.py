@@ -16,8 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path,include
 from user import views as user_view
+from questionApi import views as api_views
 from user.views import RegisterUserView
-from .routers import router
+from .routers import router, suggest_router
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,6 +26,8 @@ urlpatterns = [
     path('', include("user.urls")),
     path('register/', RegisterUserView.as_view(), name="register_user"),
     path('api/', include(router.urls), name="question_api"),
+    path('suggest/', include(suggest_router.urls)),
+    path('api/suggest_questions', api_views.ListSugestQuestion.as_view(), ),
 
 
 

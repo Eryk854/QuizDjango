@@ -4,15 +4,23 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from  .models import Pytanie
 from django.contrib.auth.decorators import login_required
-from user.models import Player,Account
+from user.models import Player, Account
+from questionApi.models import SuggestQuestion
 from random import randint
 from django.core import serializers
+from django.views.generic.edit import FormView, CreateView
+from .forms import NewQuestionForm
 import requests
+from django.core import serializers
+from rest_framework.authtoken.models import Token
 # Create your views here.
 
 
 @login_required
 def index(request):
+    if not Token.objects.filter(user_id=request.user.id):
+        token = Token.objects.create(user=request.user)
+        print(token)
     wynik = Player.objects.get(email=request.user.email).best_score
     return render(request, "Pytania/index.html",
                     {'player': request.user.email,
@@ -22,7 +30,7 @@ def index(request):
 def get_questions():
     count = Pytanie.objects.count()
     questions = []
-    while len(questions)<5:
+    while len(questions) < 5:
         random_object = Pytanie.objects.all()[randint(0, count - 1)]
         while random_object in questions:
             random_object = Pytanie.objects.all()[randint(0, count - 1)]
@@ -30,8 +38,12 @@ def get_questions():
     questions = serializers.serialize('json', questions)
     return questions
 
-def get_questions_from_api():
-    api_questions = requests.get("http://localhost:8000/api/question/").json()
+
+def get_questions_from_api(request):
+
+    token = 'b5a4ff878af1ccfee6b08a08a28be22c0ac7cce9'
+    headers = {'Authorization': 'Token {}'.format(token)}
+    api_questions = requests.get("http://localhost:8000/api/question/", headers=headers).json()
     count = len(api_questions)
     questions = []
     while len(questions) < 5:
@@ -41,13 +53,14 @@ def get_questions_from_api():
         questions.append(random_object)
     return questions
 
+
 @login_required
 def pierwsze_pytanie(request):
     request.session['bledne_odpowiedzi'] = []
     request.session['moje_bledne'] = []
     request.session['nr_pytania'] = 0
     request.session['poprawne_odpowiedzi'] = 0
-    request.session['pytania'] = get_questions_from_api()
+    request.session['pytania'] = get_questions_from_api(request)
     request.session.modified = True
     return redirect('/Quiz/questions/')
 
@@ -120,3 +133,24 @@ def zakoncz_quiz(request):
                   {'my_elements':my_elements,
                    'poprawne_odp': request.session['poprawne_odpowiedzi'],
                    'player':request.user.email})
+
+
+class AddNewQuestionView(CreateView):
+    form_class = NewQuestionForm
+    template_name = "Pytania/new_question_form.html"
+    success_url = "/Quiz/"
+
+    def get_initial(self, *args, **kwargs):
+        initial = super(AddNewQuestionView, self).get_initial(**kwargs)
+        player = Player.objects.get(email=self.request.user)
+        initial['player'] = player
+        return initial
+
+    # def form_valid(self, form):
+    #     print(type(self.request.user))
+    #     cleaned_data = form.cleaned_data
+    #     player = Player.objects.get(email=self.request.user)
+    #     cleaned_data['player'] = player
+    #     new_question = SugestQuestion.objects.create(cleaned_data)
+    #     #new_question.save()
+    #     print(cleaned_data)

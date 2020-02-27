@@ -3,10 +3,13 @@ from django.contrib.auth.models import AbstractBaseUser,BaseUserManager
 from django.db.models.signals import post_save
 from django.urls import reverse
 
+from rest_framework.authtoken.models import Token
 from PIL import Image
 # Create your models here.
+
+
 class Player(models.Model):
-    email = models.EmailField(max_length=254,blank=False)
+    email = models.EmailField(max_length=254, blank=False)
     username = models.CharField(max_length=100, blank=True)
     best_score = models.IntegerField(default=-1)
     profile_image = models.ImageField(upload_to='profile/', default='profile/default.jpg')
@@ -29,7 +32,7 @@ class Player(models.Model):
 class MyAccountManager(BaseUserManager):
     def create_user(self,email,password=None):
         if not email:
-            raise ValueError("Users must habe an emial address")
+            raise ValueError("Users must have an email address")
 
         user = self.model(
             email=self.normalize_email(email)
@@ -78,6 +81,9 @@ class Account(AbstractBaseUser):
 
 def create_profile(sender,**kwargs):
     if kwargs['created']:
+        user = Account.objects.get(email=kwargs['instance'])
+        token = Token.objects.create(user=user)
+        print(token)
         player = Player.objects.create(email=kwargs['instance'])
 
 
