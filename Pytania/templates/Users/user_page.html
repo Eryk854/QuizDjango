@@ -23,6 +23,10 @@
         {% ifnotequal player.best_score -1 %}
             <p class="text-secondary">Twój najlepszy wynik : {{player.best_score}}</p>
         {% endifnotequal %}
+        Your questions stats: <br>
+        Question added to database: {{question_stats.added}}<br>
+        Question deleted: {{question_stats.deleted}}<br>
+        Question witch wait for confirm: {{question_stats.waiting}}<br>
         <a href="user_panel/edit_profile/"> <button>Zaktualizuj dane</button></a>
     </div>
 </div>

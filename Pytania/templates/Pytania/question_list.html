@@ -1,0 +1,51 @@
+{% extends "Pytania/base.html" %}
+{% block content %}
+
+<!--<ol>-->
+<!--    {% for question in questions %}-->
+<!--    <li>Text: {{question.text}}</li>-->
+<!--        <ul>-->
+<!--            <li>Answer A:{{question.answerB}}</li>-->
+<!--            <li>Answer B:{{question.answerC}}</li>-->
+<!--            <li>Answer C:{{question.answerD}}</li>-->
+<!--            <li>Answer D:{{question.answerA}}</li>-->
+<!--        </ul>-->
+
+<!--    {% endfor%}-->
+
+<!--</ol>-->
+<ol>
+    {% for question in page_obj %}
+        <li>Text: {{question.text}}</li>
+        <ul>
+            <li>Answer A: {{question.answerB}}</li>
+            <li>Answer B: {{question.answerC}}</li>
+            <li>Answer C: {{question.answerD}}</li>
+            <li>Answer D: {{question.answerA}}</li>
+        </ul>
+    {% endfor %}
+</ol>
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1" ><button type="button" class="btn btn-outline-info">First</button></a>
+            <a href="?page={{page_obj.previous_page_number}}"><button type="button" class="btn btn-outline-info">Previous</button></a>
+        {% endif %}
+
+        {% for number in page_obj.paginator.page_range %}
+            {% if page_obj.number == number %}
+                <a href="?page={{number}}" ><button type="button" class="btn btn-info">{{number}}</button></a>
+
+            {% elif number > page_obj.number|add:'-3' and number < page_obj.number|add:'3' %}
+
+                 <a href="?page={{number}}" ><button type="button" class="btn btn-outline-info">{{number}}</button></a>
+            {% endif %}
+
+        {%endfor%}
+        {% if page_obj.has_next %}
+            <a href="?page={{page_obj.next_page_number}}" ><button type="button" class="btn btn-outline-info">Next</button></a>
+            <a href="?page={{page_obj.paginator.num_pages}}"><button type="button" class="btn btn-outline-info">Last</button></a>
+        {% endif %}
+    </span>
+</div>
+{% endblock %}

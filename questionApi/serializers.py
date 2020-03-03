@@ -22,6 +22,6 @@ class SuggestQuestionSerializer(serializers.HyperlinkedModelSerializer):
     )
     class Meta:
         model = SuggestQuestion
-        fields = '__all__'
+        #fields = '__all__'
         #fields = ['url', 'text', 'player']
-        #exclude = ('player',)
+        exclude = ('status',)

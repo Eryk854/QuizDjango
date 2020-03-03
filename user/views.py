@@ -2,22 +2,27 @@ from django.shortcuts import render,redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse
-from .models import Player, Account
-from .forms import RegisterForm, UpdateProfileForm
 from django.contrib import messages
-import jwt
 from django.contrib.auth import login, authenticate
 from django.views.generic import UpdateView
 from django.views import View
 from django.contrib.messages.views import SuccessMessageMixin
+
+from rest_framework.authtoken.models import Token
+
+from .models import Player, Account
+from .forms import RegisterForm, UpdateProfileForm
+
+import requests
+import jwt
+
 from random import randint
-# Create your views here.
 
 
 def index(request):
     user = authenticate(request=request)
-    if user:
-        login(request,user)
+    if not user.is_anonymous:
+        login(request, user)
         return redirect("Quiz/")
     else:
         if request.GET.get('error'):
@@ -25,12 +30,22 @@ def index(request):
         return render(request, "Users/login_page.html")
 
 
+def get_question_stats_from_api(request):
+    token = Token.objects.get(user=request.user)
+    headers = {'Authorization': 'Token {}'.format(token)}
+    r = requests.get("http://localhost:8000/api/questions_status/", headers=headers)
+    print(r.json())
+    return r.json()
+
+
 def user_panel(request):
     player = Player.objects.get(email=request.user.email)
     date_joined = Account.objects.get(email=request.user.email).date_joined
+    questions_stats = get_question_stats_from_api(request)
     return render(request, "Users/user_page.html",
                   {'player': player,
-                   'date_joined': date_joined})
+                   'date_joined': date_joined,
+                   'question_stats': questions_stats})
 
 
 class RegisterUserView(SuccessMessageMixin, View):

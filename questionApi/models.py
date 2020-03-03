@@ -19,6 +19,11 @@ class SuggestQuestion(models.Model):
         ('C', 'C'),
         ('D', 'D')
     ]
+    STATUS = [
+        ('Added', 'Added'),
+        ('Deleted', 'Deleted'),
+        ('Wait', 'Wait for reaction')
+    ]
 
     player = models.ForeignKey(Player, on_delete=models.PROTECT)
     text = models.CharField(max_length=255)
@@ -27,3 +32,4 @@ class SuggestQuestion(models.Model):
     answerC = models.CharField(max_length=255)
     answerD = models.CharField(max_length=255)
     correct_answer = models.CharField(max_length=1, choices=ANSWERS)
+    status = models.CharField(max_length=10, choices=STATUS, default='Wait')

@@ -2,18 +2,20 @@ from django.shortcuts import render,redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
-from  .models import Pytanie
 from django.contrib.auth.decorators import login_required
-from user.models import Player, Account
-from questionApi.models import SuggestQuestion
-from random import randint
 from django.core import serializers
 from django.views.generic.edit import FormView, CreateView
-from .forms import NewQuestionForm
-import requests
-from django.core import serializers
+from django.views.generic.list import ListView
+from django.core.paginator import Paginator
+
 from rest_framework.authtoken.models import Token
-# Create your views here.
+
+from user.models import Player, Account
+from questionApi.models import SuggestQuestion
+from .forms import NewQuestionForm
+
+from random import randint
+import requests
 
 
 @login_required
@@ -25,18 +27,6 @@ def index(request):
     return render(request, "Pytania/index.html",
                     {'player': request.user.email,
                      'score': wynik})
-
-
-def get_questions():
-    count = Pytanie.objects.count()
-    questions = []
-    while len(questions) < 5:
-        random_object = Pytanie.objects.all()[randint(0, count - 1)]
-        while random_object in questions:
-            random_object = Pytanie.objects.all()[randint(0, count - 1)]
-        questions.append(random_object)
-    questions = serializers.serialize('json', questions)
-    return questions
 
 
 def get_questions_from_api(request):
@@ -80,10 +70,8 @@ def questions(request):
 @csrf_exempt
 def sprawdz_odp(request):
     odp = request.POST['options']
-    print(request.session['nr_pytania'])
     actual_question = request.session['pytania'][request.session['nr_pytania']]
 
-    print(actual_question)
     true_odp = actual_question['correct_answer']
     if odp == true_odp:
         request.session['poprawne_odpowiedzi'] += 1
@@ -146,11 +134,23 @@ class AddNewQuestionView(CreateView):
         initial['player'] = player
         return initial
 
-    # def form_valid(self, form):
-    #     print(type(self.request.user))
-    #     cleaned_data = form.cleaned_data
-    #     player = Player.objects.get(email=self.request.user)
-    #     cleaned_data['player'] = player
-    #     new_question = SugestQuestion.objects.create(cleaned_data)
-    #     #new_question.save()
-    #     print(cleaned_data)
+class QuestionList(ListView):
+    template_name = "Pytania/question_list.html"
+    model = SuggestQuestion
+
+    def get_context_data(self, **kwargs):
+        token = Token.objects.get(user=self.request.user)
+        context = super().get_context_data(**kwargs)
+        headers = {'Authorization': 'Token {}'.format(token)}
+        r = requests.get("http://localhost:8000/api/question/", headers=headers)
+        questions = r.json()
+
+        paginator = Paginator(questions, 5)
+        page_number = self.request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        context['page_obj'] = page_obj
+        return context
+
+    # def get_queryset(self):
+    #     return True

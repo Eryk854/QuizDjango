@@ -141,7 +141,6 @@ MEDIA_URL = '/media/'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
-        'questionApi.authentication.MyAuthentication'
     ),
     'DEFAULT_PERMISSION_CLASSES': [
         #'rest_framework.permissions.IsAdminUser',

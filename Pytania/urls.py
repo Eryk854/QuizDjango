@@ -7,4 +7,5 @@ urlpatterns = [
     path('zakoncz_quiz',views.zakoncz_quiz, name="end_quiz"),
     path('questions/', views.questions),
     path('new_question/', views.AddNewQuestionView.as_view(), name='new_question'),
+    path('question_db', views.QuestionList.as_view(), name="question_list")
 ]

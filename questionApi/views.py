@@ -1,15 +1,20 @@
 from django.shortcuts import render
-from .models import Question, SuggestQuestion
 from django.core import serializers
-from .serializers import QuestionSerializer, QuestionUserSerializer, SuggestQuestionSerializer
+
 from rest_framework import viewsets, mixins
 from rest_framework import permissions, authentication
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveDestroyAPIView
 from rest_framework.mixins import DestroyModelMixin
 from rest_framework.decorators import action
+from rest_framework.authtoken.models import Token
+from rest_framework.views import APIView
+
 from .permissions import MyPermission
-from .authentication import MyAuthentication
+from .serializers import QuestionSerializer, QuestionUserSerializer, SuggestQuestionSerializer
+from .models import Question, SuggestQuestion
+from user.models import Account
+
 import requests
 
 
@@ -18,7 +23,8 @@ class QuestionViewSet(viewsets.ModelViewSet):
     serializer_class = QuestionSerializer
     # I also create my own permission class witch do the same as get_permission method permission_classes = [MyPermission]
     #authentication_classes = [authentication.RemoteUserAuthentication]
-    authentication_classes = [authentication.TokenAuthentication]
+    authentication_classes = [authentication.TokenAuthentication,
+                              authentication.SessionAuthentication]
 
     def get_permissions(self):
         """
@@ -30,7 +36,6 @@ class QuestionViewSet(viewsets.ModelViewSet):
         if self.action != 'list':
             permission_classes = [permissions.IsAdminUser]
         else:
-            print('tu')
             print(self.request.headers)
             permission_classes = [permissions.IsAuthenticated]
             print(self.request.user)
@@ -50,37 +55,87 @@ class QuestionViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
 
 
-
-
-class ListSugestQuestion(DestroyModelMixin, ListAPIView):
-    queryset = SuggestQuestion.objects.all()
-    serializer_class = QuestionUserSerializer
-    permission_classes = [permissions.IsAdminUser]
-
-    def perform_destroy(self, instance):
-        pass
+# class ListSugestQuestion(DestroyModelMixin, ListAPIView):
+#     queryset = SuggestQuestion.objects.filter(status='Wait')
+#     serializer_class = QuestionUserSerializer
+#     permission_classes = [permissions.IsAdminUser]
+#
+#     def perform_destroy(self, instance):
+#         pass
 
 
 class SuggestQuestionVieSet(viewsets.GenericViewSet,
                             mixins.ListModelMixin,
-                            mixins.DestroyModelMixin,
+                            # mixins.DestroyModelMixin,
                             mixins.RetrieveModelMixin,
-                            mixins.CreateModelMixin):
+                            mixins.CreateModelMixin,
+                            mixins.UpdateModelMixin):
     serializer_class = SuggestQuestionSerializer
-    queryset = SuggestQuestion.objects.all()
+    queryset = SuggestQuestion.objects.filter(status='Wait')
     permission_classes = [permissions.IsAdminUser]
+    authentication_classes = [authentication.TokenAuthentication,
+                              authentication.SessionAuthentication]
 
-    @action(detail=True, methods=['get'])
+    @action(detail=True, methods=['get', 'put'])
     def confirm_question(self, request, pk=None):
         serializer = SuggestQuestionSerializer(SuggestQuestion.objects.get(pk=pk), context={'request': request})
-
         data = serializer.data
         data.pop('url')
         data.pop('player')
-        print(data)
-        headers = {"content-type": "application/json"}
-        r = requests.post("http://localhost:8000/api/question/", json=data, headers=headers)
-        print(r.json())
-        requests.delete("http://localhost:8000/suggest/suggest_question/{}".format(pk))
+        token = Token.objects.get(user_id=request.user.id)
+        s_question = SuggestQuestion.objects.get(text=data['text'])
+        s_question.status = 'Added'
+        s_question.save()
+        # add to question api
+        headers = {'content-type': 'application/json', 'Authorization': 'Token {}'.format(token)}
+        r = requests.post("http://localhost:8000/api/question/", headers=headers, json=data)
+
         return Response("Dodano")
+
+    @action(detail=True, methods=['get'])
+    def delete_question(self, request, pk=None):
+        serializer = SuggestQuestionSerializer(SuggestQuestion.objects.get(pk=pk), context={'request': request})
+        data = serializer.data
+        s_question = SuggestQuestion.objects.get(text=data['text'])
+        s_question.status = 'Deleted'
+        s_question.save()
+        return Response("Usunięto")
+
+    @action(detail=False, methods=['get'])
+    def deleted_list(self, request):
+        serializer = SuggestQuestionSerializer(SuggestQuestion.objects.filter(status="Deleted"),
+                                               context={'request': request}, many=True)
+        data = serializer.data
+
+        return Response(data)
+
+    @action(detail=False, methods=['get'])
+    def added_list(self, request):
+        serializer = SuggestQuestionSerializer(SuggestQuestion.objects.filter(status="Added"),
+                                               context={'request': request}, many=True)
+        data = serializer.data
+
+        return Response(data)
+
+    # @action(detail=False, methods=['get'])
+    # def question_status(self, request):
+    #
+    #     added = SuggestQuestion.objects.filter(player=request.user.id, status="Added").count()
+    #     deleted = SuggestQuestion.objects.filter(player=request.user.id, status="Deleted").count()
+    #     waiting = SuggestQuestion.objects.filter(player=request.user.id, status="waiting").count()
+    #
+    #     return Response({'added': added, 'deleted': deleted, 'waiting': waiting})
+
+
+class QuestionStatusView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [authentication.TokenAuthentication,
+                              authentication.SessionAuthentication]
+
+    def get(self, request):
+        added = SuggestQuestion.objects.filter(player=request.user.id, status="Added").count()
+        deleted = SuggestQuestion.objects.filter(player=request.user.id, status="Deleted").count()
+        waiting = SuggestQuestion.objects.filter(player=request.user.id, status="Wait").count()
+
+        return Response({'added': added, 'deleted': deleted, 'waiting': waiting})
 
