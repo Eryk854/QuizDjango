@@ -13,6 +13,7 @@ from rest_framework.authtoken.models import Token
 from user.models import Player, Account
 from questionApi.models import SuggestQuestion
 from .forms import NewQuestionForm
+from secret_settings import *
 
 from random import randint
 import requests
@@ -31,7 +32,7 @@ def index(request):
 
 def get_questions_from_api(request):
 
-    token = 'b5a4ff878af1ccfee6b08a08a28be22c0ac7cce9'
+    token = API_KEY
     headers = {'Authorization': 'Token {}'.format(token)}
     api_questions = requests.get("http://localhost:8000/api/question/", headers=headers).json()
     count = len(api_questions)
@@ -130,8 +131,10 @@ class AddNewQuestionView(CreateView):
 
     def get_initial(self, *args, **kwargs):
         initial = super(AddNewQuestionView, self).get_initial(**kwargs)
-        player = Player.objects.get(email=self.request.user)
+        player = Account.objects.get(email=self.request.user)
+        print(player)
         initial['player'] = player
+        print(initial)
         return initial
 
 class QuestionList(ListView):

@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.core import serializers
 
 from rest_framework import viewsets, mixins
@@ -55,15 +55,6 @@ class QuestionViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
 
 
-# class ListSugestQuestion(DestroyModelMixin, ListAPIView):
-#     queryset = SuggestQuestion.objects.filter(status='Wait')
-#     serializer_class = QuestionUserSerializer
-#     permission_classes = [permissions.IsAdminUser]
-#
-#     def perform_destroy(self, instance):
-#         pass
-
-
 class SuggestQuestionVieSet(viewsets.GenericViewSet,
                             mixins.ListModelMixin,
                             # mixins.DestroyModelMixin,
@@ -76,30 +67,39 @@ class SuggestQuestionVieSet(viewsets.GenericViewSet,
     authentication_classes = [authentication.TokenAuthentication,
                               authentication.SessionAuthentication]
 
-    @action(detail=True, methods=['get', 'put'])
+    @action(detail=True, methods=['get'])
     def confirm_question(self, request, pk=None):
+        """
+        This function confirm and add suggest question from user to list of question used in quiz app.
+        If question has already been confirmed return this messege
+        """
         serializer = SuggestQuestionSerializer(SuggestQuestion.objects.get(pk=pk), context={'request': request})
         data = serializer.data
         data.pop('url')
         data.pop('player')
         token = Token.objects.get(user_id=request.user.id)
         s_question = SuggestQuestion.objects.get(text=data['text'])
-        s_question.status = 'Added'
-        s_question.save()
-        # add to question api
-        headers = {'content-type': 'application/json', 'Authorization': 'Token {}'.format(token)}
-        r = requests.post("http://localhost:8000/api/question/", headers=headers, json=data)
-
-        return Response("Dodano")
+        if s_question.status == 'Wait':
+            s_question.status = 'Added'
+            s_question.save()
+            # add to question api
+            headers = {'content-type': 'application/json', 'Authorization': 'Token {}'.format(token)}
+            requests.post("http://localhost:8000/api/question/", headers=headers, json=data)
+            return redirect("suggestquestion-list")
+        else:
+            return Response("Question has already been confirmed")
 
     @action(detail=True, methods=['get'])
     def delete_question(self, request, pk=None):
         serializer = SuggestQuestionSerializer(SuggestQuestion.objects.get(pk=pk), context={'request': request})
         data = serializer.data
         s_question = SuggestQuestion.objects.get(text=data['text'])
-        s_question.status = 'Deleted'
-        s_question.save()
-        return Response("Usunięto")
+        if s_question.status == 'Wait':
+            s_question.status = 'Deleted'
+            s_question.save()
+            return redirect("suggestquestion-list")
+        else:
+            return Response("Question has already been confirmed ")
 
     @action(detail=False, methods=['get'])
     def deleted_list(self, request):
@@ -133,6 +133,7 @@ class QuestionStatusView(APIView):
                               authentication.SessionAuthentication]
 
     def get(self, request):
+        print(request.user.id)
         added = SuggestQuestion.objects.filter(player=request.user.id, status="Added").count()
         deleted = SuggestQuestion.objects.filter(player=request.user.id, status="Deleted").count()
         waiting = SuggestQuestion.objects.filter(player=request.user.id, status="Wait").count()

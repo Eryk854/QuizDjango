@@ -1,5 +1,5 @@
 from django.db import models
-from user.models import Player
+from user.models import Player, Account
 # Create your models here.
 
 
@@ -25,7 +25,7 @@ class SuggestQuestion(models.Model):
         ('Wait', 'Wait for reaction')
     ]
 
-    player = models.ForeignKey(Player, on_delete=models.PROTECT)
+    player = models.ForeignKey(Account, on_delete=models.PROTECT)
     text = models.CharField(max_length=255)
     answerA = models.CharField(max_length=255)
     answerB = models.CharField(max_length=255)

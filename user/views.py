@@ -10,11 +10,15 @@ from django.contrib.messages.views import SuccessMessageMixin
 
 from rest_framework.authtoken.models import Token
 
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+
 from .models import Player, Account
 from .forms import RegisterForm, UpdateProfileForm
 
 import requests
 import jwt
+import os
 
 from random import randint
 
