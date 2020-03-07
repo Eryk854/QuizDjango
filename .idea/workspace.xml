@@ -2,22 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5ad9c3ce-5bfc-4c46-8067-4eff6aa258ed" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Pytania/templates/registration/password_reset_confirm.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Pytania/templates/registration/password_reset_done.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Pytania/templates/registration/password_reset_email.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Pytania/templates/registration/password_reset_form.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/secret_settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Pytania/models.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Pytania/templates/registration/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/Pytania/templates/registration/login.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Pytania/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/Pytania/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Quiz/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/Quiz/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Quiz/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/Quiz/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/questionApi/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/questionApi/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/questionApi/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/questionApi/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/user/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/user/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/secret_settings.py" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -133,7 +119,14 @@
       <option name="project" value="LOCAL" />
       <updated>1583255833239</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Refactor">
+      <created>1583589878625</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1583589878625</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -163,6 +156,7 @@
     <MESSAGE value="Questions are stored in api, code change under that" />
     <MESSAGE value="User and admin permission to questions and answers, token permission, users can add question" />
     <MESSAGE value="Add deleted, added list to api. Every user have stats how many questions was confirmed by admin. Add pagination to question db" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add deleted, added list to api. Every user have stats how many questions was confirmed by admin. Add pagination to question db" />
+    <MESSAGE value="Refactor" />
+    <option name="LAST_COMMIT_MESSAGE" value="Refactor" />
   </component>
 </project>

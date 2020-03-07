@@ -15,10 +15,6 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(template_name='registration/logout_page.html'), name="logout"),
     path('user_panel', user_view.user_panel, name="user_panel"),
     path('user_panel/edit_profile/', UserEditView.as_view()),
-    path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
-    path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
-    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
-    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
-    path('send', user_view.send),
+
 
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
